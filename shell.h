@@ -149,5 +149,7 @@ int read_history(info_t *info);
 int build_history_list(info_t *info, char *buf, int linecount);
 int renumber_history(info_t *info);
 int bfree(void **ptr);
+char **strtow(char *str, char *d);
+char **strtow2(char *str, char d);
 
 #endif
