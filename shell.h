@@ -9,8 +9,8 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <stdbool.h>
-#include <stdbool.h>
 #include <errno.h>
+#include <signal.h>
 
 #define MAX_TOKENS 100
 #define MAX_TOKEN_LENGTH 100
@@ -30,6 +30,8 @@
 #define USE_STRTOK 0
 #define HIST_FILE	".simple_shell_history"
 #define HIST_MAX	4096
+#define READ_BUF_SIZE 1024
+#define BUF_FLUSH '\0'
 
 typedef struct liststr
 {
@@ -61,6 +63,7 @@ int readfd;
 int err_num;
 list_t *history;
 list_t *alias;
+unsigned int line_count;
 } info_t;
 
 
@@ -72,12 +75,9 @@ char *my_getenv(info_t *info, const char *name);
 int _mysetenv(info_t *info);
 int _myunsetenv(info_t *info);
 int populate_env_list(info_t *info);
-void add_node_end(list_t **head, const char *str, int value);
 ssize_t custom_getline(char **lineptr, size_t *n, FILE *stream);
 void remove_comments(char *buf);
-void build_history_list(info_t *info, char *buf, int histcount);
 int shell_setenv(char **setenv_args);
-char starts_with(const char *str, const char *prefix);
 int shell_unsetenv(char **unsetenv_args);
 int shell_cd(char **cd_args);
 void execute_command(char *command);
@@ -118,11 +118,13 @@ ssize_t get_input(info_t *info);
 ssize_t read_buf(info_t *info, char *buf, size_t *i);
 int _getline(info_t *info, char **ptr, size_t *length);
 void sigintHandler(__attribute__((unused)) int sig_num);
-list_t *add_node(list_t **head, const char *str, int num);
-list_t *add_node_end(list_t **head, const char *str, int num);
-size_t print_list_str(const list_t *h);
-int delete_node_at_index(list_t **head, unsigned int index);
-void free_list(list_t **head_ptr);
+
+list_t *add_node(list_t **, const char *, int);
+list_t *add_node_end(list_t **, const char *, int);
+size_t print_list_str(const list_t *);
+int delete_node_at_index(list_t **, unsigned int);
+void free_list(list_t **);
+
 size_t list_len(const list_t *h);
 char **list_to_strings(list_t *head);
 size_t print_list(const list_t *h);
@@ -137,10 +139,10 @@ void find_cmd(info_t *info);
 void fork_cmd(info_t *info);
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
-char *starts_with(const char *haystack, const char *needle);
+char *starts_with(const char *, const char *);
 char *_strcat(char *dest, char *src);
 char *_strcpy(char *dest, char *src);
-char *_strdup(const char *str);
+char *_strdup(const char *);
 void _puts(char *str);
 int _putchar(char c);
 char *get_history_file(info_t *info);
@@ -151,5 +153,14 @@ int renumber_history(info_t *info);
 int bfree(void **ptr);
 char **strtow(char *str, char *d);
 char **strtow2(char *str, char d);
+
+int is_chain(info_t *, char *, size_t *);
+void check_chain(info_t *, char *, size_t *, size_t, size_t);
+int replace_alias(info_t *);
+int replace_vars(info_t *);
+int replace_string(char **, char *);
+
+int _myhistory(info_t *);
+int _myalias(info_t *);
 
 #endif

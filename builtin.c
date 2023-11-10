@@ -1,53 +1,98 @@
 #include "shell.h"
 
 /**
- * shell_setenv - Handles the setenv built-in command.
- * @setenv_args: The arguments for setenv command.
- *
- * Return: 0 on success, -1 on failure.
+ * _myexit - exits the shell
+ * @info: Structure containing potential arguments. Used to maintain
+ *         constant function prototype.
+ * Return: exits with a given exit status
+ *         (0) if info.argv[0] != "exit"
  */
-int shell_setenv(char **setenv_args)
+int _myexit(info_t *info)
 {
-if (setenv_args && setenv_args[1] && setenv_args[2])
-{
-if (setenv(setenv_args[1], setenv_args[2], 1) != 0)
-{
-/* Print an error message to stderr on failure.*/
-write(STDERR_FILENO, "Failed to set environment variable\n", 34);
-return (-1);
-}
-return (0);
-}
-else
-{
-/* Print an error message to stderr on incorrect syntax */
-write(STDERR_FILENO, "Usage: setenv VARIABLE VALUE\n", 30);
-return (-1);
-}
+    int exitcheck;
+
+    if (info->argv[1])  /* If there is an exit argument */
+    {
+        exitcheck = _erratoi(info->argv[1]);
+        if (exitcheck == -1)
+        {
+            info->status = 2;
+            perror("Illegal number: ");
+            write(STDERR_FILENO, info->argv[1], _strlen(info->argv[1]));
+            write(STDERR_FILENO, "\n", 1);
+            return (1);
+        }
+        info->err_num = _erratoi(info->argv[1]);
+        return (-2);
+    }
+    info->err_num = -1;
+    return (-2);
 }
 
 /**
- * shell_unsetenv - Handles the unsetenv built-in command.
- * @unsetenv_args: The arguments for unsetenv command.
- *
- * Return: 0 on success, -1 on failure.
+ * _mycd - changes the current directory of the process
+ * @info: Structure containing potential arguments. Used to maintain
+ *         constant function prototype.
+ * Return: Always 0
  */
-int shell_unsetenv(char **unsetenv_args)
+int _mycd(info_t *info)
 {
-if (unsetenv_args && unsetenv_args[1])
+    char *s, *dir, buffer[1024];
+    int chdir_ret;
+
+    s = getcwd(buffer, 1024);
+    if (!s)
+        perror("TODO: >>getcwd failure emsg here<<\n");
+    if (!info->argv[1])
+    {
+        dir = _getenv(info, "HOME=");
+        if (!dir)
+            chdir_ret = chdir((dir = _getenv(info, "PWD=")) ? dir : "/");
+        else
+            chdir_ret = chdir(dir);
+    }
+    else if (_strcmp(info->argv[1], "-") == 0)
+    {
+        if (!_getenv(info, "OLDPWD="))
+        {
+            write(STDOUT_FILENO, s, _strlen(s));
+            write(STDOUT_FILENO, "\n", 1);
+            return (1);
+        }
+        write(STDOUT_FILENO, _getenv(info, "OLDPWD="), _strlen(_getenv(info, "OLDPWD=")));
+        write(STDOUT_FILENO, "\n", 1);
+        chdir_ret = chdir((dir = _getenv(info, "OLDPWD=")) ? dir : "/");
+    }
+    else
+        chdir_ret = chdir(info->argv[1]);
+    if (chdir_ret == -1)
+    {
+        perror("can't cd to ");
+        write(STDERR_FILENO, info->argv[1], _strlen(info->argv[1]));
+        write(STDERR_FILENO, "\n", 1);
+    }
+    else
+    {
+        _setenv(info, "OLDPWD", _getenv(info, "PWD="));
+        _setenv(info, "PWD", getcwd(buffer, 1024));
+    }
+    return (0);
+}
+
+/**
+ * _myhelp - changes the current directory of the process
+ * @info: Structure containing potential arguments. Used to maintain
+ *         constant function prototype.
+ * Return: Always 0
+ */
+int _myhelp(info_t *info)
 {
-if (unsetenv(unsetenv_args[1]) != 0)
-{
-/* Print an error message to stderr if the variable doesn't exist*/
-write(STDERR_FILENO, "Environment variable does not exist\n", 38);
-return (-1);
+    char **arg_array;
+
+    arg_array = info->argv;
+    write(STDOUT_FILENO, "help call works. Function not yet implemented \n", 47);
+    if (0)
+        write(STDOUT_FILENO, *arg_array, _strlen(*arg_array)); /* temp att_unused workaround */
+    return (0);
 }
-return (0);
-}
-else
-{
-/*  Print an error message to stderr on incorrect syntax.*/
-write(STDERR_FILENO, "Usage: unsetenv VARIABLE\n", 26);
-return (-1);
-}
-}
+

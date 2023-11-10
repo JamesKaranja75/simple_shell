@@ -1,5 +1,6 @@
 #include "shell.h"
 #include <unistd.h>
+#include <limits.h>
 
 /**
  * _erratoi - converts a string to an integer
@@ -59,6 +60,8 @@ int print_d(int input, int fd)
 int i, count = 0;
 unsigned int _abs_, current;
 char sign = '-';
+char lastDigit;
+
 if (fd == STDERR_FILENO)
 write(STDERR_FILENO, &sign, 1);
 else
@@ -89,7 +92,7 @@ count++;
 }
 current %= i;
 }
-char lastDigit = '0' + current;
+lastDigit = '0' + current;
 if (fd == STDERR_FILENO)
 write(STDERR_FILENO, &lastDigit, 1);
 else

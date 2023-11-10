@@ -97,7 +97,7 @@ return (0);
 node = node->next;
 }
 
-add_node_end(&info->env, buf);
+add_node_end(&info->env, buf, 0);
 free(buf);
 info->env_changed = 1;
 

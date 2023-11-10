@@ -1,44 +1,112 @@
 #include "shell.h"
 
 /**
- * shell_cd - Handles the cd built-in command.
- * @cd_args: The arguments for cd command.
- *
- * Return: 0 on success, -1 on failure.
+ * _myhistory - displays the history list, one command per line, preceded
+ * with line numbers starting at 0.
+ * @info: Structure containing potential arguments. Used to maintain
+ * constant function prototype.
+ * Return: Always 0
  */
-int shell_cd(char **cd_args)
+int _myhistory(info_t *info)
 {
-char *new_directory = NULL;
-char *current_directory = getcwd(NULL, 0);
-if (!cd_args[1])
-{
-/* If no argument is provided, change to the user's home directory. */
-new_directory = getenv("HOME");
+print_list(info->history);
+return (0);
 }
-else if (strcmp(cd_args[1], "-") == 0)
+
+/**
+ * unset_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
+ * Return: Always 0 on success, 1 on error
+ */
+int unset_alias(info_t *info, char *str)
 {
-/* Handle "cd -" to switch to the previous working directory. */
-new_directory = getenv("OLDPWD");
+char *p, c;
+int ret;
+
+p = strtok(str, "=");
+if (!p)
+return (1);
+c = *p;
+*p = 0;
+ret = delete_node_at_index(&(info->alias),
+get_node_index(info->alias, node_starts_with(info->alias, str, -1)));
+*p = c;
+return (ret);
 }
+
+/**
+ * set_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
+ * Return: Always 0 on success, 1 on error
+ */
+int set_alias(info_t *info, char *str)
+{
+char *p;
+
+p = strtok(str, "=");
+if (!p)
+return (1);
+if (!*++p)
+return (unset_alias(info, str));
+
+unset_alias(info, str);
+return (add_node_end(&(info->alias), str, 0) == NULL);
+}
+
+/**
+ * print_alias - prints an alias string
+ * @node: the alias node
+ * Return: Always 0 on success, 1 on error
+ */
+int print_alias(list_t *node)
+{
+char *p = NULL, *a = NULL;
+
+if (node)
+{
+p = strtok(node->str, "=");
+for (a = node->str; a <= p; a++)
+write(1, a, 1); // Use write instead of _putchar
+write(1, "\'", 1); // Use write instead of _putchar
+write(1, p + 1, strlen(p + 1)); // Use write instead of _puts
+write(1, "\'\n", 2); // Use write instead of _puts
+return (0);
+}
+return (1);
+}
+
+/**
+ * _myalias - mimics the alias builtin (man alias)
+ * @info: Structure containing potential arguments. Used to maintain
+ * constant function prototype.
+ * Return: Always 0
+ */
+int _myalias(info_t *info)
+{
+int i = 0;
+char *p = NULL;
+list_t *node = NULL;
+
+if (info->argc == 1)
+{
+node = info->alias;
+while (node)
+{
+print_alias(node);
+node = node->next;
+}
+return (0);
+}
+for (i = 1; info->argv[i]; i++)
+{
+p = strtok(info->argv[i], "=");
+if (p)
+set_alias(info, info->argv[i]);
 else
-{
-new_directory = cd_args[1];
+print_alias(node_starts_with(info->alias, info->argv[i], '='));
 }
-
-if (chdir(new_directory) == -1)
-{
-/* Print an error message to stderr on failure. */
-perror("cd");
-return (-1);
-}
-
-/* Update the PWD environment variable. */
-current_directory = getcwd(NULL, 0);
-setenv("PWD", current_directory, 1);
-free(current_directory);
-
-/* Update the OLDPWD environment variable to the previous working directory. */
-setenv("OLDPWD", new_directory, 1);
 
 return (0);
 }
