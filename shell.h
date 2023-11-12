@@ -73,6 +73,7 @@ unsigned int line_count;
 
 extern char **environ;
 
+void execute_command(char *command);
 void shell_exit(char **exit_args);
 
 char *_getenv(info_t *, const char *);
@@ -158,7 +159,7 @@ int build_history_list(info_t *info, char *buf, int linecount);
 int renumber_history(info_t *info);
 int bfree(void **ptr);
 
-char **strtow(char *, char *);
+char **strtow(char *str, char *d);
 char **strtow2(char *, char);
 
 int is_chain(info_t *, char *, size_t *);
@@ -167,7 +168,7 @@ int replace_alias(info_t *);
 int replace_vars(info_t *);
 int replace_string(char **, char *);
 
-int _myhistory(info_t *);
+int myhistory(info_t *);
 int _myalias(info_t *);
 
 int _myexit(info_t *);
