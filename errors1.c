@@ -52,7 +52,6 @@ write(STDERR_FILENO, estr, _strlen(estr));
  * print_d - function prints a decimal (integer) number (base 10)
  * @input: the input
  * @fd: the file descriptor to write to
- *
  * Return: number of characters printed
  */
 int print_d(int input, int fd)
@@ -61,7 +60,6 @@ int i, count = 0;
 unsigned int _abs_, current;
 char sign = '-';
 char lastDigit;
-
 if (fd == STDERR_FILENO)
 write(STDERR_FILENO, &sign, 1);
 else

@@ -1,53 +1,77 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
-#define MAX_INPUT_SIZE 1024
+#include "shell.h"
 
 /**
- * runShell - Run the simple shell program
+ * _strncpy - copies a string
+ * @dest: the destination string to be copied to
+ * @src: the source string
+ * @n: the amount of characters to be copied
  *
- * Description: Encapsulates the functionality of a basic shell program.
- * Displays a prompt, reads user input, processes "exit" command, and handles
- * unknown commands.
+ * Return: the concatenated string
  */
-void runShell(void)
+char *_strncpy(char *dest, char *src, int n)
 {
-char input[MAX_INPUT_SIZE];
-char *command;
-while (1)
+int i, j;
+char *s = dest;
+
+i = 0;
+while (src[i] != '\0' && i < n - 1)
 {
-write(STDOUT_FILENO, "MyShell> ", 9);
-if (fgets(input, sizeof(input), stdin) == NULL)
-{
-write(STDOUT_FILENO, "\n", 1);
-break;
+dest[i] = src[i];
+i++;
 }
-input[strcspn(input, "\n")] = '\0';
-command = strtok(input, " ");
-if (command == NULL)
+if (i < n)
 {
-continue;
-}
-if (strcmp(command, "exit") == 0)
+j = i;
+while (j < n)
 {
-char *arg = strtok(NULL, " ");
-if (arg != NULL)
-{
-int status_code = atoi(arg);
-exit(status_code);
-}
-else
-{
-exit(0);
+dest[j] = '\0';
+j++;
 }
 }
-else
+return (s);
+}
+
+/**
+ * _strncat - concatenates two strings
+ * @dest: the first string
+ * @src: the second string
+ * @n: the amount of bytes to be maximally used
+ *
+ * Return: the concatenated string
+ */
+char *_strncat(char *dest, char *src, int n)
 {
-char unknown_msg[1024];
-snprintf(unknown_msg, sizeof(unknown_msg), "Unknown command: %s\n", command);
-write(STDOUT_FILENO, unknown_msg, strlen(unknown_msg));
+int i, j;
+char *s = dest;
+
+i = 0;
+j = 0;
+while (dest[i] != '\0')
+i++;
+while (src[j] != '\0' && j < n)
+{
+dest[i] = src[j];
+i++;
+j++;
 }
+if (j < n)
+dest[i] = '\0';
+return (s);
 }
+
+/**
+ * _strchr - locates a character in a string
+ * @s: the string to be parsed
+ * @c: the character to look for
+ *
+ * Return: (s) a pointer to the memory area s
+ */
+char *_strchr(char *s, char c)
+{
+do {
+if (*s == c)
+return (s);
+} while (*s++ != '\0');
+
+return (NULL);
 }

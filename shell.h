@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <stdbool.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
 
@@ -31,7 +32,7 @@
 #define HIST_FILE	".simple_shell_history"
 #define HIST_MAX	4096
 #define READ_BUF_SIZE 1024
-#define BUF_FLUSH '\0'
+
 
 typedef struct liststr
 {
@@ -66,10 +67,15 @@ list_t *alias;
 unsigned int line_count;
 } info_t;
 
+#define INFO_INIT \
+{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
+	0, 0, 0}
 
 extern char **environ;
 
 void shell_exit(char **exit_args);
+
+char *_getenv(info_t *, const char *);
 int _myenv(info_t *info);
 char *my_getenv(info_t *info, const char *name);
 int _mysetenv(info_t *info);
@@ -111,7 +117,7 @@ void ffree(char **pp);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 int _erratoi(char *s);
 int print_d(int input, int fd);
-char *convert_number(long int num, int base, int flags);
+char *convert_number(long int, int, int);
 void remove_comments(char *buf);
 ssize_t input_buf(info_t *info, char **buf, size_t *len);
 ssize_t get_input(info_t *info);
@@ -151,8 +157,9 @@ int read_history(info_t *info);
 int build_history_list(info_t *info, char *buf, int linecount);
 int renumber_history(info_t *info);
 int bfree(void **ptr);
-char **strtow(char *str, char *d);
-char **strtow2(char *str, char d);
+
+char **strtow(char *, char *);
+char **strtow2(char *, char);
 
 int is_chain(info_t *, char *, size_t *);
 void check_chain(info_t *, char *, size_t *, size_t, size_t);
@@ -163,4 +170,25 @@ int replace_string(char **, char *);
 int _myhistory(info_t *);
 int _myalias(info_t *);
 
+int _myexit(info_t *);
+int _mycd(info_t *);
+int _myhelp(info_t *);
+
+char *_strncpy(char *, char *, int);
+char *_strncat(char *, char *, int);
+char *_strchr(char *, char);
+
+int _putsfd(char *str, int fd);
+int _putfd(char c, int fd);
+
+char *find_path(info_t *, char *, char *);
+
+int exe_cmd(info_t *, char *);
+
+void print_error(info_t *, char *);
+
+void _eputs(char *);
+int _eputchar(char);
+int _putfd(char c, int fd);
+int _putsfd(char *str, int fd);
 #endif

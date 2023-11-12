@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * is_chain - test if the current char in buffer is a chain delimiter
+ * is_chain - tests if the current char in the buffer is a chain delimiter
  * @info: the parameter struct
  * @buf: the char buffer
  * @p: address of the current position in buf
@@ -24,7 +24,7 @@ buf[j] = 0;
 j++;
 info->cmd_buf_type = CMD_AND;
 }
-else if (buf[j] == ';') /* found the end of this command */
+else if (buf[j] == ';') /* found end of this command */
 {
 buf[j] = 0; /* replace semicolon with null */
 info->cmd_buf_type = CMD_CHAIN;
@@ -36,7 +36,7 @@ return (1);
 }
 
 /**
- * check_chain - checks if we should continue chaining based on last status
+ * check_chain - checks if we should continue chaining based on the last status
  * @info: the parameter struct
  * @buf: the char buffer
  * @p: address of the current position in buf
@@ -116,18 +116,21 @@ continue;
 
 if (!_strcmp(info->argv[i], "$?"))
 {
-replace_string(&(info->argv[i]), _strdup(convert_number(info->status, 10, 0)));
+replace_string(&(info->argv[i]),
+_strdup(convert_number(info->status, 10, 0)));
 continue;
 }
 if (!_strcmp(info->argv[i], "$$"))
 {
-replace_string(&(info->argv[i]), _strdup(convert_number(getpid(), 10, 0)));
+replace_string(&(info->argv[i]),
+_strdup(convert_number(getpid(), 10, 0)));
 continue;
 }
 node = node_starts_with(info->env, &info->argv[i][1], '=');
 if (node)
 {
-replace_string(&(info->argv[i]), _strdup(_strchr(node->str, '=') + 1));
+replace_string(&(info->argv[i]),
+_strdup(_strchr(node->str, '=') + 1));
 continue;
 }
 replace_string(&info->argv[i], _strdup(""));
@@ -136,7 +139,7 @@ return (0);
 }
 
 /**
- * replace_string - replaces string
+ * replace_string - replaces a string
  * @old: address of the old string
  * @new: new string
  *
