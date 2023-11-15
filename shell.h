@@ -33,43 +33,69 @@
 #define HIST_MAX	4096
 #define READ_BUF_SIZE 1024
 
-
+/**
+ * struct liststr - Structure to represent a linked list node for string data
+ * @num: Numeric identifier
+ * @str: String data
+ * @next: Pointer to the next node in the list
+ */
 typedef struct liststr
 {
-int num;
-char *str;
-struct liststr *next;
+int num;           /* Numeric identifier */
+char *str;         /* String data */
+struct liststr *next; /* Pointer to the next node in the list */
 } list_t;
 
-typedef struct
+/**
+ * struct info_t - Structure to hold information about the shell
+ * @name: Name of the shell
+ * @pathstr: String representation of the shell's path
+ * @cmd: Command string
+ * @path: Path information
+ * @env: Pointer to linked list of environment variables
+ * @some_data: Some data field
+ * @argc: Argument count
+ * @argv: Array of command-line arguments
+ * @linecount_flag: Flag indicating whether to display line count
+ * @histcount: History count
+ * @arg: Array of arguments
+ * @env_changed: Flag indicating whether the environment has changed
+ * @environ: Array of environment variables
+ * @fname: File name
+ * @status: Status information
+ * @cmd_buf: Pointer to command chain buffer for memory management
+ * @cmd_buf_type: Command buffer type (CMD_type ||, &&, ;)
+ * @readfd: File descriptor for reading
+ * @err_num: Error number
+ * @history: Pointer to linked list of command history
+ * @alias: Pointer to linked list of aliases
+ * @line_count: Line count
+ */
+typedef struct info_t
 {
-char *name;
-char *pathstr;
-char *cmd;
-char *path;
-list_t *env;
-int some_data;
-int argc;
-char **argv;
-int linecount_flag;
-int histcount;
-char **arg;
-int env_changed;
-char **environ;
-char *fname;
-int status;
-char **cmd_buf; /* pointer to cmd ; chain buffer, for memory mangement */
-int cmd_buf_type; /* CMD_type ||, &&, ; */
-int readfd;
-int err_num;
-list_t *history;
-list_t *alias;
-unsigned int line_count;
+char *name;          /* Name of the shell */
+char *pathstr;       /* String representation of the shell's path */
+char *cmd;           /* Command string */
+char *path;          /* Path information */
+list_t *env;         /* Pointer to linked list of environment variables */
+int some_data;       /* Some data field */
+int argc;            /* Argument count */
+char **argv;         /* Array of command-line arguments */
+int linecount_flag;  /* Flag indicating whether to display line count */
+int histcount;       /* History count */
+char **arg;          /* Array of arguments */
+int env_changed;     /* Flag indicating whether the environment has changed */
+char **environ;      /* Array of environment variables */
+char *fname;         /* File name */
+int status;          /* Status information */
+char **cmd_buf;      /* Pointer to command buffer for memory management */
+int cmd_buf_type;    /* Command buffer type (CMD_type ||, &&, ;) */
+int readfd;          /* File descriptor for reading */
+int err_num;         /* Error number */
+list_t *history;     /* Pointer to linked list of command history */
+list_t *alias;       /* Pointer to linked list of aliases */
+unsigned int line_count; /* Line count */
 } info_t;
-
-#define INFO_INIT \
-{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
-	0, 0, 0}
 
 extern char **environ;
 
