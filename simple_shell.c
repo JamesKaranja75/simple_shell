@@ -1,6 +1,5 @@
 #include "shell.h"
 
-
 /**
  * execute_command - Execute a command in a child process
  * @command: The command to execute
@@ -8,7 +7,6 @@
  * command in the child process using execve. It waits for the child process
  * to complete in the parent process.
  */
-
 void execute_command(char *command)
 {
 pid_t pid = fork();
@@ -54,7 +52,7 @@ size_t len = 0;
 while (1)
 {
 char prompt[] = "#cisfun$ ";
-write(STDOUT_FILENO, prompt, sizeof(prompt)); /* Use the write system call*/
+write(STDOUT_FILENO, prompt, sizeof(prompt) - 1); /* Exclude null terminator */
 
 if (getline(&command, &len, stdin) == -1)
 {
@@ -64,6 +62,13 @@ exit(0);
 }
 
 command[strcspn(command, "\n")] = '\0';
+
+if (strcmp(command, "exit") == 0)
+{
+free(command);
+exit(0);
+}
+
 execute_command(command);
 }
 
